@@ -1,0 +1,139 @@
+/* NASA TLX App Styles */
+
+#root {
+  min-height: 100vh;
+  width: 100%;
+}
+
+body {
+  background-color: #f8f9fa;
+  margin: 0;
+  padding: 0;
+}
+
+/* Container improvements for better width usage */
+.container-fluid {
+  max-width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
+/* Bootstrap gap utility support for older versions */
+.gap-2 {
+  gap: 0.5rem !important;
+}
+
+.d-flex {
+  display: flex !important;
+}
+
+.flex-grow-1 {
+  flex-grow: 1 !important;
+}
+
+/* Card styling */
+.card {
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  border: none;
+  border-radius: 0.5rem;
+  width: 100%;
+  transition: all 0.2s ease;
+}
+
+.card.cursor-pointer:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 123, 255, 0.25);
+  border: 2px solid #007bff;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.card-header {
+  background-color: #fff;
+  border-bottom: 2px solid #e9ecef;
+  font-weight: 600;
+  padding: 1.25rem;
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+.card-footer {
+  padding: 1.25rem;
+  background-color: #fff;
+  border-top: 1px solid #e9ecef;
+}
+
+/* Form improvements */
+.form-label {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.form-control,
+.form-select {
+  padding: 0.6rem 0.75rem;
+  font-size: 1rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+/* Button improvements */
+.btn {
+  font-weight: 500;
+  padding: 0.6rem 1.5rem;
+  border-radius: 0.375rem;
+}
+
+.btn-lg {
+  padding: 0.75rem 2rem;
+  font-size: 1.1rem;
+}
+
+/* Navbar */
+.navbar {
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  padding: 1rem 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+  .container-fluid {
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+  
+  .card-body {
+    padding: 1rem;
+  }
+  
+  .card-header,
+  .card-footer {
+    padding: 1rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .card {
+    min-width: 500px;
+  }
+}
+
+@media (min-width: 992px) {
+  .card {
+    min-width: 600px;
+  }
+}
+
+
