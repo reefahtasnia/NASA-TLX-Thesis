@@ -215,6 +215,7 @@ const Dashboard = () => {
                       <tr>
                         <th>#</th>
                         <th>Participant ID</th>
+                        <th>Mode</th>
                         <th>Email</th>
                         <th>Age</th>
                         <th>Major</th>
@@ -230,6 +231,11 @@ const Dashboard = () => {
                         <tr key={participant.id}>
                           <td>{index + 1}</td>
                           <td className="fw-bold">{participant.id}</td>
+                          <td>
+                            <Badge color={participant.info?.mode === 'Mode 1' ? 'primary' : 'success'}>
+                              {participant.info?.mode || 'N/A'}
+                            </Badge>
+                          </td>
                           <td>{participant.info?.email || 'N/A'}</td>
                           <td>{participant.info?.age || 'N/A'}</td>
                           <td>{participant.info?.major || 'N/A'}</td>

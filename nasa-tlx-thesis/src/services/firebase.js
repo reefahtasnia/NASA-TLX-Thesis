@@ -145,6 +145,7 @@ export const getAllParticipants = async () => {
 export const exportToCSV = (participants) => {
   const headers = [
     'Participant ID',
+    'Mode',
     'Email',
     'Age',
     'Major/Field',
@@ -172,6 +173,7 @@ export const exportToCSV = (participants) => {
     .filter(p => p.completed)
     .map(p => [
       p.id,
+      p.info?.mode || '',
       p.info?.email || '',
       p.info?.age || '',
       p.info?.major || '',

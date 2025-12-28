@@ -27,6 +27,7 @@ const ParticipantInfo = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [formData, setFormData] = useState({
+    mode: '',
     email: '',
     age: '',
     major: '',
@@ -58,6 +59,10 @@ const ParticipantInfo = () => {
 
   const validateForm = () => {
     const newErrors = {};
+
+    if (!formData.mode) {
+      newErrors.mode = 'Please select a mode';
+    }
 
     if (!formData.email || !formData.email.includes('@')) {
       newErrors.email = 'Please enter a valid email address';
@@ -155,6 +160,24 @@ const ParticipantInfo = () => {
                 )}
 
                 <Form onSubmit={handleSubmit}>
+                  {/* Mode */}
+                  <FormGroup>
+                    <Label for="mode">Mode *</Label>
+                    <Input
+                      type="select"
+                      id="mode"
+                      name="mode"
+                      value={formData.mode}
+                      onChange={handleChange}
+                      invalid={!!errors.mode}
+                    >
+                      <option value="">-- Select a mode --</option>
+                      <option value="Mode 1">Mode 1</option>
+                      <option value="Mode 2">Mode 2</option>
+                    </Input>
+                    {errors.mode && <FormFeedback>{errors.mode}</FormFeedback>}
+                  </FormGroup>
+
                   {/* Email */}
                   <FormGroup>
                     <Label for="email">Email Address *</Label>
