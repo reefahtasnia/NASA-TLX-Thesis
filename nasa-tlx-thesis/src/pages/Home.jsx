@@ -15,21 +15,27 @@ import {
   Input,
   Button,
   FormFeedback,
+  Alert,
 } from 'reactstrap';
 import Menubar from '../components/Menubar';
+import { getParticipant } from '../services/firebase';
+import Loading from '../components/Loading';
 
 const Home = () => {
   const navigate = useNavigate();
   const [participantId, setParticipantId] = useState('');
   const [error, setError] = useState('');
+  const [warning, setWarning] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleGenerateId = () => {
     const newId = uuidv4().split('-')[0]; // Short UUID (8 characters)
     setParticipantId(newId);
     setError('');
+    setWarning('');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (!participantId || participantId.trim() === '') {
@@ -37,14 +43,44 @@ const Home = () => {
       return;
     }
 
-    // Navigate to participant info form
+    setLoading(true);
+    setError('');
+    setWarning('');
+
+    try {
+      // Check if participant ID already exists
+      const existingParticipant = await getParticipant(participantId);
+      
+      if (existingParticipant.exists) {
+        setWarning('⚠️ Warning: This Participant ID already exists in the database. If you continue, you may overwrite existing data.');
+        setLoading(false);
+        return;
+      }
+
+      // Navigate to participant info form
+      navigate(`/participant/${participantId}`);
+    } catch (err) {
+      console.error('Error checking participant:', err);
+      setError('An error occurred while checking the Participant ID. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleContinueAnyway = () => {
+    setWarning('');
     navigate(`/participant/${participantId}`);
   };
 
   const handleChange = (e) => {
     setParticipantId(e.target.value);
     if (error) setError('');
+    if (warning) setWarning('');
   };
+
+  if (loading) {
+    return <Loading fullScreen />;
+  }
 
   return (
     <>
@@ -60,6 +96,21 @@ const Home = () => {
                 <p className="text-muted text-center mb-4">
                   Welcome! Please enter or generate a unique Participant ID to begin the assessment.
                 </p>
+                
+                {warning && (
+                  <Alert color="warning" className="mb-4">
+                    {warning}
+                    <div className="mt-3 text-end">
+                      <Button color="secondary" size="sm" className="me-2" onClick={() => setWarning('')}>
+                        Cancel
+                      </Button>
+                      <Button color="warning" size="sm" onClick={handleContinueAnyway}>
+                        Continue Anyway
+                      </Button>
+                    </div>
+                  </Alert>
+                )}
+
                 <Form onSubmit={handleSubmit}>
                   <FormGroup>
                     <Label for="participantId">Participant ID</Label>
@@ -87,7 +138,7 @@ const Home = () => {
                 </Form>
               </CardBody>
               <CardFooter className="text-end">
-                <Button color="primary" size="lg" onClick={handleSubmit}>
+                <Button color="primary" size="lg" onClick={handleSubmit} disabled={!!warning}>
                   Start Assessment
                 </Button>
               </CardFooter>

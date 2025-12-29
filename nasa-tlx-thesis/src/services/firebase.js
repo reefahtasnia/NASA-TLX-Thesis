@@ -20,6 +20,7 @@ export const database = getDatabase(app);
 
 // Database reference path
 const PARTICIPANTS_PATH = 'participants';
+const GERMANE_LOAD_PATH = 'germaneLoad';
 
 /**
  * Create a new participant entry in Firebase
@@ -138,6 +139,32 @@ export const getAllParticipants = async () => {
 };
 
 /**
+ * Save grading scores for a Germane Load response
+ * @param {string} participantId - Participant ID
+ * @param {object} scores - Scores object with questionId as key and score as value
+ * @param {number} totalScore - Total score
+ * @returns {Promise<object>} - { success: boolean }
+ */
+export const saveGermaneLoadScores = async (participantId, scores, totalScore) => {
+  try {
+    const scoreRef = ref(database, `${GERMANE_LOAD_PATH}/${participantId}`);
+    await update(scoreRef, {
+      scores,
+      totalScore,
+      gradedAt: new Date().toISOString(),
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error('Error saving Germane Load scores:', error);
+    return {
+      success: false,
+      error: error.message,
+    };
+  }
+};
+
+/**
  * Export participants data to CSV format
  * @param {array} participants - Array of participant objects
  * @returns {string} - CSV formatted string
@@ -154,6 +181,7 @@ export const exportToCSV = (participants) => {
     'Gaming Platform',
     'Weighted TLX Score',
     'Time Taken (seconds)',
+    'Germane Load Score',
     'Date Completed',
     'Mental Demand (Raw)',
     'Physical Demand (Raw)',
@@ -182,6 +210,7 @@ export const exportToCSV = (participants) => {
       p.info?.gamingPlatform || '',
       p.weightedRating || '',
       p.timeTakenSeconds || '',
+      p.germaneLoadScore !== undefined ? p.germaneLoadScore : '',
       p.date || '',
       p.scale?.['Mental Demand'] || '',
       p.scale?.['Physical Demand'] || '',
@@ -203,4 +232,89 @@ export const exportToCSV = (participants) => {
   ].join('\n');
 
   return csvContent;
+};
+
+/**
+ * Save Germane Load questionnaire responses
+ * @param {string} participantId - Participant ID
+ * @param {object} responses - Questionnaire responses
+ * @returns {Promise<object>} - { success: boolean }
+ */
+export const saveGermaneLoadResponse = async (participantId, responses) => {
+  try {
+    const responseRef = ref(database, `${GERMANE_LOAD_PATH}/${participantId}`);
+    await set(responseRef, {
+      ...responses,
+      submittedAt: new Date().toISOString(),
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error('Error saving Germane Load response:', error);
+    return {
+      success: false,
+      error: error.message,
+    };
+  }
+};
+
+/**
+ * Get Germane Load response for a participant
+ * @param {string} participantId - Participant ID
+ * @returns {Promise<object>} - { success: boolean, data, exists: boolean }
+ */
+export const getGermaneLoadResponse = async (participantId) => {
+  try {
+    const responseRef = ref(database, `${GERMANE_LOAD_PATH}/${participantId}`);
+    const snapshot = await get(responseRef);
+    const exists = snapshot.exists();
+
+    return {
+      success: true,
+      data: exists ? snapshot.val() : null,
+      exists,
+    };
+  } catch (error) {
+    console.error('Error getting Germane Load response:', error);
+    return {
+      success: false,
+      error: error.message,
+    };
+  }
+};
+
+/**
+ * Get all Germane Load responses
+ * @returns {Promise<object>} - { success: boolean, data: array }
+ */
+export const getAllGermaneLoadResponses = async () => {
+  try {
+    const responsesRef = ref(database, GERMANE_LOAD_PATH);
+    const snapshot = await get(responsesRef);
+    
+    if (!snapshot.exists()) {
+      return {
+        success: true,
+        data: [],
+      };
+    }
+
+    const responsesData = snapshot.val();
+    const responsesArray = Object.entries(responsesData).map(([id, data]) => ({
+      participantId: id,
+      ...data,
+    }));
+
+    return {
+      success: true,
+      data: responsesArray,
+    };
+  } catch (error) {
+    console.error('Error getting all Germane Load responses:', error);
+    return {
+      success: false,
+      error: error.message,
+      data: [],
+    };
+  }
 };

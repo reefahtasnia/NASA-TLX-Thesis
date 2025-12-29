@@ -25,17 +25,19 @@ import {
 } from 'recharts';
 import Menubar from '../components/Menubar';
 import Loading from '../components/Loading';
-import { getAllParticipants, updateParticipant, exportToCSV } from '../services/firebase';
+import { getAllParticipants, updateParticipant, exportToCSV, getAllGermaneLoadResponses } from '../services/firebase';
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [participants, setParticipants] = useState([]);
+  const [germaneLoadScores, setGermaneLoadScores] = useState({});
   const [editingTime, setEditingTime] = useState({}); // Track which rows are being edited
   const [timeValues, setTimeValues] = useState({}); // Store temporary time values
 
   useEffect(() => {
     fetchParticipants();
+    fetchGermaneLoadScores();
   }, []);
 
   const fetchParticipants = async () => {
@@ -55,6 +57,19 @@ const Dashboard = () => {
       setTimeValues(initialTimes);
     }
     setLoading(false);
+  };
+
+  const fetchGermaneLoadScores = async () => {
+    const result = await getAllGermaneLoadResponses();
+    if (result.success) {
+      const scoresMap = {};
+      result.data.forEach(response => {
+        if (response.totalScore !== undefined) {
+          scoresMap[response.participantId] = response.totalScore;
+        }
+      });
+      setGermaneLoadScores(scoresMap);
+    }
   };
 
   const handleTimeEdit = (participantId) => {
@@ -100,7 +115,12 @@ const Dashboard = () => {
   };
 
   const handleExportCSV = () => {
-    const csv = exportToCSV(participants);
+    // Add germane load scores to participants data
+    const participantsWithGermane = participants.map(p => ({
+      ...p,
+      germaneLoadScore: germaneLoadScores[p.id]
+    }));
+    const csv = exportToCSV(participantsWithGermane);
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -222,6 +242,7 @@ const Dashboard = () => {
                         <th>Gaming Exp.</th>
                         <th>TLX Score</th>
                         <th>Time Taken</th>
+                        <th>Germane Load</th>
                         <th>Date</th>
                         <th>Actions</th>
                       </tr>
@@ -293,6 +314,15 @@ const Dashboard = () => {
                                   ✏️
                                 </Button>
                               </div>
+                            )}
+                          </td>
+                          <td>
+                            {germaneLoadScores[participant.id] !== undefined ? (
+                              <Badge color="info">
+                                {germaneLoadScores[participant.id]}/100
+                              </Badge>
+                            ) : (
+                              <Badge color="secondary">N/A</Badge>
                             )}
                           </td>
                           <td className="small">{participant.date}</td>

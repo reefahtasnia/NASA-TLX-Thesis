@@ -7,12 +7,22 @@ const Menubar = () => {
       <Container fluid>
         <div className="d-flex justify-content-between align-items-center w-100">
           <NavbarBrand tag={Link} to="/" className="mb-0">
-            NASA TLX
+            Player Feedback
           </NavbarBrand>
-          <Nav navbar>
-            <NavItem>
+          <Nav navbar className="flex-row">
+            <NavItem className="me-3">
               <NavLink tag={Link} to="/dashboard" className="text-white">
-                Admin Dashboard
+                NASA TLX Dashboard
+              </NavLink>
+            </NavItem>
+            <NavItem className="me-3">
+              <NavLink tag={Link} to="/germane-load-form" className="text-white">
+                Germane Load Form
+              </NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink tag={Link} to="/germane-load-dashboard" className="text-white">
+                Germane Load Dashboard
               </NavLink>
             </NavItem>
           </Nav>

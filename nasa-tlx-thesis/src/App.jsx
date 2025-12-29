@@ -12,6 +12,8 @@ import CompareCards from './pages/CompareCards';
 import End from './pages/End';
 import Results from './pages/Results';
 import Dashboard from './pages/Dashboard';
+import GermaneLoad from './pages/GermaneLoad';
+import GermaneLoadDashboard from './pages/GermaneLoadDashboard';
 
 function App() {
   return (
@@ -26,6 +28,8 @@ function App() {
         <Route path="/end/:participantId" element={<End />} />
         <Route path="/results/:participantId" element={<Results />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/germane-load-form" element={<GermaneLoad />} />
+        <Route path="/germane-load-dashboard" element={<GermaneLoadDashboard />} />
       </Routes>
     </BrowserRouter>
   );
